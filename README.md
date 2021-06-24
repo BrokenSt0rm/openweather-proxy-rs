@@ -11,7 +11,6 @@ Just clone this repository, and create a .env file based on the .env.example inc
 ```
 docker-compose up -d
 ```
-The Docker container is binded to the port 8080.  
 Right now this project has just one endpoint that can be used as below
 ```
 http://HOST:PORT/weather?lat={latitude}&lon={longitude}&unit=[metrics, fahrenheit, kelvin]
@@ -20,7 +19,6 @@ http://HOST:PORT/weather?lat={latitude}&lon={longitude}&unit=[metrics, fahrenhei
 ## Todo
 
 There are still some features to be implemented, such as:
- - Rate Limiter
  - Request caching
 
 ## Contributing

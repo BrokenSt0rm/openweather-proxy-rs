@@ -17,8 +17,6 @@ FROM alpine:latest
 
 ARG APP=/usr/src/app
 
-EXPOSE 8000
-
 ENV TZ=Etc/UTC \
     APP_USER=appuser
 
