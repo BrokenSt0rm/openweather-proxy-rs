@@ -13,6 +13,10 @@ pub enum OpenWeatherProxyError {
     Unknown,
     #[error("OpenWeather is not available")]
     RepositoryError,
+    #[error(transparent)]
+    ReqwestError(#[from] reqwest::Error),
+    #[error(transparent)]
+    ActixError(#[from] actix_web::error::Error),
 }
 
 impl ResponseError for OpenWeatherProxyError {
@@ -22,6 +26,8 @@ impl ResponseError for OpenWeatherProxyError {
             Self::Forbidden => StatusCode::FORBIDDEN,
             Self::Unknown => StatusCode::INTERNAL_SERVER_ERROR,
             Self::RepositoryError => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::ReqwestError(..) => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::ActixError(..) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 

@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use actix_ratelimit::{MemoryStore, MemoryStoreActor, RateLimiter};
+use actix_ratelimit::{errors::ARError, MemoryStore, MemoryStoreActor, RateLimiter};
 use actix_web::{web, App, HttpResponse, HttpServer};
 use dotenv_codegen::dotenv;
 use openweather_proxy::{
@@ -27,7 +27,16 @@ async fn main() -> std::io::Result<()> {
                         dotenv!("RATE_LIMIT_MAX_REQUESTS_IN_INTERVAL")
                             .parse::<usize>()
                             .unwrap_or(100),
-                    ),
+                    )
+                    .with_identifier(|req| {
+                        let connection_info = req.connection_info();
+                        let real_ip = connection_info.realip_remote_addr();
+
+                        match real_ip {
+                            Some(real_ip) => Ok(real_ip.to_string()),
+                            None => Err(ARError::IdentificationError),
+                        }
+                    }),
             )
             .default_service(web::route().to(not_found))
             .service(weather::get_current_weather_route)

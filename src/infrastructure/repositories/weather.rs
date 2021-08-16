@@ -1,7 +1,8 @@
 use async_trait::async_trait;
-use openweather_async::{OpenWeather, Units, Weather};
+use openweather_async::Weather;
+use reqwest::Client;
 
-use crate::types::error::OpenWeatherProxyError;
+use crate::types::{error::OpenWeatherProxyError, request::Units};
 
 #[async_trait]
 pub trait WeatherRepository {
@@ -9,17 +10,22 @@ pub trait WeatherRepository {
         &self,
         lat: f32,
         lon: f32,
+        unit: Units,
     ) -> Result<Weather, OpenWeatherProxyError>;
+
+    fn get_url(&self, operation: String, unit: Units) -> String;
 }
 
 pub struct WeatherRepositoryImpl {
-    openweather_service: OpenWeather,
+    internal_client: Client,
+    api_key: String,
 }
 
 impl WeatherRepositoryImpl {
-    pub async fn new(api_key: &str, unit: Units) -> WeatherRepositoryImpl {
+    pub async fn new(api_key: &str) -> WeatherRepositoryImpl {
         WeatherRepositoryImpl {
-            openweather_service: OpenWeather::new(api_key, unit).await.unwrap(),
+            internal_client: Client::new(),
+            api_key: api_key.to_string(),
         }
     }
 }
@@ -30,10 +36,24 @@ impl WeatherRepository for WeatherRepositoryImpl {
         &self,
         lat: f32,
         lon: f32,
+        unit: Units,
     ) -> Result<Weather, OpenWeatherProxyError> {
-        match self.openweather_service.get_by_coordinates(lat, lon).await {
-            Ok(weather) => Ok(weather),
-            Err(_) => Err(OpenWeatherProxyError::RepositoryError),
-        }
+        let response: Weather = self
+            .internal_client
+            .get(self.get_url(format!("weather?lat={}&lon={}", lat, lon), unit))
+            .send()
+            .await?
+            .json()
+            .await?;
+
+        Ok(response)
+    }
+
+    fn get_url(&self, operation: String, unit: Units) -> String {
+        let base_http = "https://api.openweathermap.org/data/2.5/";
+        format!(
+            "{}{}&appid={}&units={}",
+            &base_http, &operation, self.api_key, unit
+        )
     }
 }
