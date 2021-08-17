@@ -19,9 +19,9 @@ pub struct LatLonRequest {
 impl fmt::Display for Units {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Units::Celsius => write!(f, "{:?}", "metric"),
-            Units::Fahrenheit => write!(f, "{:?}", "imperial"),
-            Units::Kelvin => write!(f, "{:?}", "standard"),
+            Units::Celsius => write!(f, "metric"),
+            Units::Fahrenheit => write!(f, "imperial"),
+            Units::Kelvin => write!(f, "standard"),
         }
     }
 }

@@ -1,6 +1,7 @@
 use std::time::Duration;
 
 use actix_ratelimit::{errors::ARError, MemoryStore, MemoryStoreActor, RateLimiter};
+use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpResponse, HttpServer};
 use dotenv_codegen::dotenv;
 use openweather_proxy::{
@@ -13,9 +14,15 @@ async fn not_found() -> Result<HttpResponse, OpenWeatherProxyError> {
 }
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    std::env::set_var("RUST_LOG", "actix_web=info");
+    env_logger::init();
     let rate_limiter_store = MemoryStore::new();
     HttpServer::new(move || {
         App::new()
+            .wrap(Logger::default())
+            .wrap(Logger::new(
+                "%a %{User-Agent}i X-Forwarded-For: %{X-Forwarded-For}i",
+            ))
             .wrap(
                 RateLimiter::new(MemoryStoreActor::from(rate_limiter_store.clone()).start())
                     .with_interval(Duration::from_secs(
