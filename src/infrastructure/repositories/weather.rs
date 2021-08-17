@@ -40,7 +40,7 @@ impl WeatherRepository for WeatherRepositoryImpl {
     ) -> Result<Weather, OpenWeatherProxyError> {
         let response: Weather = self
             .internal_client
-            .get(self.get_url(format!("weather?lat={}&lon={}", lat, lon), unit))
+            .get(&self.get_url(format!("weather?lat={}&lon={}", lat, lon), unit))
             .send()
             .await?
             .json()
