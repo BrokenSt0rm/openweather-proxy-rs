@@ -17,3 +17,10 @@ pub struct OpenWeatherProxySuccessResponse<T> {
     pub metadata: ResponseMetadata,
     pub data: T,
 }
+#[derive(Serialize)]
+pub struct ConditionResponse {
+    pub name: String,
+    pub temp: f32,
+    pub description: String,
+    pub icon: String,
+}

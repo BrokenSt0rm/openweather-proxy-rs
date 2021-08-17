@@ -46,7 +46,7 @@ async fn main() -> std::io::Result<()> {
                     }),
             )
             .default_service(web::route().to(not_found))
-            .service(weather::get_current_weather_route)
+            .service(weather::get_condition_route)
     })
     .bind(format!("{}:{}", dotenv!("HOST"), dotenv!("PORT")))?
     .run()

@@ -1,6 +1,8 @@
 # OpenWeather Proxy
 
 OpenWeather Proxy is a simple project written in Rust to proxy the requests that goes from your app to OpenWeather.
+Note that this has a very specific use for [Pock](https://github.com/pock/pock) and its [Weather Widget](https://github.com/pock/weather-widget).
+There is also a full route currently not binded in Actix, that reflects the OpenWeather response.
 
 ## Installation
 
@@ -13,7 +15,7 @@ docker-compose up -d
 ```
 Right now this project has just one endpoint that can be used as below
 ```
-http://HOST:PORT/weather?lat={latitude}&lon={longitude}&unit=[metrics, fahrenheit, kelvin]
+http://HOST:PORT/condition?lat={latitude}&lon={longitude}&unit=[celsius, fahrenheit, kelvin]&name=...
 ```
 
 ## Todo

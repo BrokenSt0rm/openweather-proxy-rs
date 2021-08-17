@@ -1,6 +1,5 @@
-use std::fmt;
-
 use serde::Deserialize;
+use std::fmt;
 
 #[derive(Deserialize, Clone, Debug)]
 #[serde(rename_all = "lowercase")]
@@ -14,6 +13,14 @@ pub struct LatLonRequest {
     pub lat: f32,
     pub lon: f32,
     pub units: Units,
+}
+
+#[derive(Deserialize)]
+pub struct ConditionRequest {
+    pub lat: f32,
+    pub lon: f32,
+    pub units: Units,
+    pub name: String,
 }
 
 impl fmt::Display for Units {
