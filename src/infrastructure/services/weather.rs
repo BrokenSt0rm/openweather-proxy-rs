@@ -80,13 +80,22 @@ where
         .get_by_coordinates(lat, lon, unit.clone())
         .await?;
 
+        let expiration_from_env: usize = dotenv!("COORDINATES_CACHE_SECONDS").parse().unwrap();
+        let expiration;
+
+        if expiration_from_env > 0 {
+            expiration = Some(expiration_from_env);
+        } else {
+            expiration = None;
+        }
+
         {
             let this = &self;
             &*this.cache_repository
         }
         .set(
             format!("{}:{}:{}", lat, lon, unit.clone()),
-            Some(60),
+            expiration,
             &weather,
         )
         .await?;
