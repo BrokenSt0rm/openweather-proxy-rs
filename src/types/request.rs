@@ -1,3 +1,4 @@
+use rust_decimal::Decimal;
 use serde::Deserialize;
 use std::fmt;
 
@@ -10,15 +11,15 @@ pub enum Units {
 }
 #[derive(Deserialize)]
 pub struct LatLonRequest {
-    pub lat: f32,
-    pub lon: f32,
+    pub lat: Decimal,
+    pub lon: Decimal,
     pub units: Units,
 }
 
 #[derive(Deserialize)]
 pub struct ConditionRequest {
-    pub lat: f32,
-    pub lon: f32,
+    pub lat: Decimal,
+    pub lon: Decimal,
     pub units: Units,
     pub name: String,
 }

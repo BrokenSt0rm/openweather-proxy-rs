@@ -1,13 +1,17 @@
+use std::sync::Arc;
 use std::time::Duration;
 
 use actix_ratelimit::{errors::ARError, MemoryStore, MemoryStoreActor, RateLimiter};
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpResponse, HttpServer};
 use dotenv_codegen::dotenv;
+use openweather_proxy::infrastructure::services::weather::WeatherServiceImpl;
+use openweather_proxy::types::state::AppData;
 use openweather_proxy::{
     application::weather::{self},
     types::error::OpenWeatherProxyError,
 };
+use r2d2_redis::{r2d2, RedisConnectionManager};
 
 async fn not_found() -> Result<HttpResponse, OpenWeatherProxyError> {
     Err(OpenWeatherProxyError::NotFound)
@@ -17,8 +21,14 @@ async fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
     let rate_limiter_store = MemoryStore::new();
+
+    let manager = RedisConnectionManager::new(dotenv!("REDIS_URL")).unwrap();
+    let pool = r2d2::Pool::builder().build(manager).unwrap();
     HttpServer::new(move || {
         App::new()
+            .data(AppData {
+                weather_service: Arc::new(WeatherServiceImpl::new(pool.clone())),
+            })
             .wrap(Logger::default())
             .wrap(Logger::new(
                 "%a %{User-Agent}i X-Forwarded-For: %{X-Forwarded-For}i",

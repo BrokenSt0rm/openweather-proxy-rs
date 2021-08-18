@@ -1,6 +1,7 @@
 use async_trait::async_trait;
 use openweather_async::Weather;
 use reqwest::Client;
+use rust_decimal::Decimal;
 
 use crate::types::{error::OpenWeatherProxyError, request::Units};
 
@@ -8,8 +9,8 @@ use crate::types::{error::OpenWeatherProxyError, request::Units};
 pub trait WeatherRepository {
     async fn get_by_coordinates(
         &self,
-        lat: f32,
-        lon: f32,
+        lat: Decimal,
+        lon: Decimal,
         unit: Units,
     ) -> Result<Weather, OpenWeatherProxyError>;
 
@@ -22,7 +23,7 @@ pub struct WeatherRepositoryImpl {
 }
 
 impl WeatherRepositoryImpl {
-    pub async fn new(api_key: &str) -> WeatherRepositoryImpl {
+    pub fn new(api_key: &str) -> WeatherRepositoryImpl {
         WeatherRepositoryImpl {
             internal_client: Client::new(),
             api_key: api_key.to_string(),
@@ -34,8 +35,8 @@ impl WeatherRepositoryImpl {
 impl WeatherRepository for WeatherRepositoryImpl {
     async fn get_by_coordinates(
         &self,
-        lat: f32,
-        lon: f32,
+        lat: Decimal,
+        lon: Decimal,
         unit: Units,
     ) -> Result<Weather, OpenWeatherProxyError> {
         let response: Weather = self

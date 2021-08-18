@@ -4,13 +4,13 @@ RUN USER=root cargo new --bin openweather_proxy
 WORKDIR ./openweather_proxy
 COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
-RUN cargo build --release
+RUN cargo build --release --features=truncate_coordinates_decimal
 RUN rm src/*.rs
 
 ADD . ./
 
 RUN rm ./target/x86_64-unknown-linux-musl/release/deps/openweather_proxy*
-RUN cargo build --release
+RUN cargo build --release --features=truncate_coordinates_decimal
 
 
 FROM alpine:latest

@@ -1,4 +1,5 @@
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
+use r2d2_redis::redis;
 use thiserror::Error;
 
 use super::response::{OpenWeatherProxyErrorResponse, ResponseMetadata};
@@ -17,6 +18,10 @@ pub enum OpenWeatherProxyError {
     ReqwestError(#[from] reqwest::Error),
     #[error(transparent)]
     ActixError(#[from] actix_web::error::Error),
+    #[error(transparent)]
+    RedisError(#[from] redis::RedisError),
+    #[error(transparent)]
+    SerdeJsonError(#[from] serde_json::Error),
 }
 
 impl ResponseError for OpenWeatherProxyError {
@@ -28,6 +33,8 @@ impl ResponseError for OpenWeatherProxyError {
             Self::RepositoryError => StatusCode::INTERNAL_SERVER_ERROR,
             Self::ReqwestError(..) => StatusCode::INTERNAL_SERVER_ERROR,
             Self::ActixError(..) => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::RedisError(..) => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::SerdeJsonError(..) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 

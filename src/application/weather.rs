@@ -1,23 +1,20 @@
 use actix_web::{get, web, HttpResponse};
-use dotenv_codegen::dotenv;
 use openweather_async::WeatherData;
 
-use crate::{
-    infrastructure::repositories::weather::{WeatherRepository, WeatherRepositoryImpl},
-    types::{
-        error::OpenWeatherProxyError,
-        request::{ConditionRequest, LatLonRequest},
-        response::{ConditionResponse, OpenWeatherProxySuccessResponse, ResponseMetadata},
-    },
+use crate::types::{
+    error::OpenWeatherProxyError,
+    request::{ConditionRequest, LatLonRequest},
+    response::{ConditionResponse, OpenWeatherProxySuccessResponse, ResponseMetadata},
+    state::AppData,
 };
 
 #[get("/weather")]
 pub async fn get_current_weather_route(
     query_params: web::Query<LatLonRequest>,
+    app_data: web::Data<AppData>,
 ) -> Result<HttpResponse, OpenWeatherProxyError> {
-    let weather_repository: WeatherRepositoryImpl =
-        WeatherRepositoryImpl::new(dotenv!("OPENWEATHER_API_KEY")).await;
-    let report = weather_repository
+    let report = app_data
+        .get_weather_service()
         .get_by_coordinates(
             query_params.lat,
             query_params.lon,
@@ -37,10 +34,10 @@ pub async fn get_current_weather_route(
 #[get("/condition")]
 pub async fn get_condition_route(
     query_params: web::Query<ConditionRequest>,
+    app_data: web::Data<AppData>,
 ) -> Result<HttpResponse, OpenWeatherProxyError> {
-    let weather_repository: WeatherRepositoryImpl =
-        WeatherRepositoryImpl::new(dotenv!("OPENWEATHER_API_KEY")).await;
-    let report = weather_repository
+    let report = app_data
+        .get_weather_service()
         .get_by_coordinates(
             query_params.lat,
             query_params.lon,
@@ -50,7 +47,7 @@ pub async fn get_condition_route(
 
     let weather_data = report
         .weather
-        .unwrap_or_else(|| Vec::new())
+        .unwrap_or_default()
         .into_iter()
         .next()
         .unwrap_or(WeatherData {

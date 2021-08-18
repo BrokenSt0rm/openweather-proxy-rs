@@ -4,3 +4,11 @@ services:
     build: .
     ports:
       - "${PORT}:${PORT}"
+  redis:
+    image: redis
+    container_name: "redis"
+    volumes:
+            - ./docker/redis.conf:/redis.conf
+    ports:
+      - 6379:6379
+    command: [ "redis-server", "/redis.conf" ]
