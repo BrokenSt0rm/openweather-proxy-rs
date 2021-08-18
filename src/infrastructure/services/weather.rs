@@ -2,7 +2,6 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use dotenv_codegen::dotenv;
-use openweather_async::Weather;
 use r2d2_redis::{r2d2::Pool, RedisConnectionManager};
 use rust_decimal::Decimal;
 use serde::{de::DeserializeOwned, Serialize};
@@ -12,7 +11,7 @@ use crate::{
         cache::{CacheRepository, CacheRepositoryImpl},
         weather::{WeatherRepository, WeatherRepositoryImpl},
     },
-    types::{error::OpenWeatherProxyError, request::Units},
+    types::{error::OpenWeatherProxyError, open_weather::Weather, request::Units},
 };
 
 #[async_trait(?Send)]

@@ -1,9 +1,8 @@
 use async_trait::async_trait;
-use openweather_async::Weather;
 use reqwest::Client;
 use rust_decimal::Decimal;
 
-use crate::types::{error::OpenWeatherProxyError, request::Units};
+use crate::types::{error::OpenWeatherProxyError, open_weather::Weather, request::Units};
 
 #[async_trait]
 pub trait WeatherRepository {

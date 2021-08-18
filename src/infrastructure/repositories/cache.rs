@@ -1,5 +1,4 @@
 use async_trait::async_trait;
-use openweather_async::Weather;
 use r2d2_redis::{
     r2d2::{Pool, PooledConnection},
     redis::Commands,
@@ -7,7 +6,7 @@ use r2d2_redis::{
 };
 use serde::{de::DeserializeOwned, Serialize};
 
-use crate::types::error::OpenWeatherProxyError;
+use crate::types::{error::OpenWeatherProxyError, open_weather::Weather};
 
 #[async_trait]
 pub trait CacheRepository<T> {
